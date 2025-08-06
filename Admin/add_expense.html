@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Add Expense - Company Management System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex align-items-center">
+            <a href="{{ url_for('expenses') }}" class="btn btn-outline-secondary me-3">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1 class="display-5 mb-0">
+                <i class="fas fa-receipt me-3"></i>Add New Expense
+            </h1>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Expense Details</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description *</label>
+                        <input type="text" class="form-control" id="description" name="description" 
+                               placeholder="e.g., Office rent, Internet bill, Equipment purchase" required>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="amount" class="form-label">Amount (KSH) *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">KSH</span>
+                                <input type="number" class="form-control" id="amount" name="amount" 
+                                       step="0.01" min="0" placeholder="0.00" required>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="category" class="form-label">Category *</label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="">Select category...</option>
+                                <option value="Office Rent">Office Rent</option>
+                                <option value="Utilities">Utilities</option>
+                                <option value="Internet & Phone">Internet & Phone</option>
+                                <option value="Equipment">Equipment</option>
+                                <option value="Software & Licenses">Software & Licenses</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Transportation">Transportation</option>
+                                <option value="Meals & Entertainment">Meals & Entertainment</option>
+                                <option value="Training & Development">Training & Development</option>
+                                <option value="Professional Services">Professional Services</option>
+                                <option value="Supplies">Supplies</option>
+                                <option value="Maintenance">Maintenance</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="date_incurred" class="form-label">Date Incurred</label>
+                        <input type="date" class="form-control" id="date_incurred" name="date_incurred">
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('expenses') }}" class="btn btn-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Expense
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-warning">
+            <div class="card-header bg-warning">
+                <h6 class="card-title mb-0 text-dark">
+                    <i class="fas fa-lightbulb me-2"></i>Expense Management Tips
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Common Expense Categories:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-home me-2 text-primary"></i>Office Rent & Utilities</li>
+                            <li><i class="fas fa-laptop me-2 text-info"></i>Equipment & Software</li>
+                            <li><i class="fas fa-bullhorn me-2 text-success"></i>Marketing & Advertising</li>
+                            <li><i class="fas fa-car me-2 text-warning"></i>Transportation & Travel</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Financial Impact:</h6>
+                        <p class="mb-2">Expenses directly affect your net profit calculation:</p>
+                        <p class="mb-0"><strong>Net Profit = Revenue - Employee Payments - Expenses</strong></p>
+                        <small class="text-muted">Keep track of all expenses for accurate profit analysis.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Set today's date as default
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date_incurred').value = today;
+});
+
+// Allow custom category entry
+document.getElementById('category').addEventListener('change', function() {
+    if (this.value === 'Other') {
+        const customCategory = prompt('Enter custom category name:');
+        if (customCategory && customCategory.trim()) {
+            // Add new option
+            const option = new Option(customCategory.trim(), customCategory.trim(), true, true);
+            this.add(option);
+        } else {
+            this.value = '';
+        }
+    }
+});
+</script>
+{% endblock %}

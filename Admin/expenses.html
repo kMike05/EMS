@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Expenses - Company Management System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="display-5">
+                <i class="fas fa-receipt me-3"></i>Expenses
+            </h1>
+            <a href="{{ url_for('add_expense') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Add Expense
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-6">
+                <label for="category" class="form-label">Filter by Category</label>
+                <select class="form-select" id="category" name="category">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                    <option value="{{ category }}" {{ 'selected' if selected_category == category }}>
+                        {{ category }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="col-md-6 d-flex align-items-end">
+                <button type="submit" class="btn btn-outline-primary me-2">
+                    <i class="fas fa-filter me-1"></i>Filter
+                </button>
+                <a href="{{ url_for('expenses') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-times me-1"></i>Clear
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if expenses.items %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            Expenses ({{ expenses.total }} total)
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in expenses.items %}
+                    <tr>
+                        <td><strong>{{ expense.description }}</strong></td>
+                        <td>
+                            <span class="badge bg-secondary">{{ expense.category }}</span>
+                        </td>
+                        <td class="text-danger">
+                            <strong>{{ "%.0f"|format(expense.amount) }} KSH</strong>
+                        </td>
+                        <td>{{ expense.date_incurred.strftime('%b %d, %Y') }}</td>
+                        <td class="text-muted">
+                            {{ expense.created_at.strftime('%b %d, %Y %I:%M %p') }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot class="table-light">
+                    <tr>
+                        <td colspan="2"><strong>Total for Current Page:</strong></td>
+                        <td class="text-danger">
+                            <strong>
+                                {{ "%.0f"|format(expenses.items | sum(attribute='amount')) }} KSH
+                            </strong>
+                        </td>
+                        <td colspan="2"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Pagination -->
+    {% if expenses.pages > 1 %}
+    <div class="card-footer">
+        <nav aria-label="Expenses pagination">
+            <ul class="pagination justify-content-center mb-0">
+                {% if expenses.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('expenses', page=expenses.prev_num, category=selected_category) }}">
+                        Previous
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for page_num in expenses.iter_pages() %}
+                    {% if page_num %}
+                        {% if page_num != expenses.page %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('expenses', page=page_num, category=selected_category) }}">
+                                {{ page_num }}
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_num }}</span>
+                        </li>
+                        {% endif %}
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if expenses.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('expenses', page=expenses.next_num, category=selected_category) }}">
+                        Next
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+        <h4 class="text-muted">No Expenses Found</h4>
+        <p class="text-muted">
+            {% if selected_category %}
+                No expenses found in the "{{ selected_category }}" category.
+            {% else %}
+                Start tracking your company expenses by adding your first expense entry.
+            {% endif %}
+        </p>
+        <a href="{{ url_for('add_expense') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add Expense
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

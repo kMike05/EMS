@@ -1,0 +1,310 @@
+/**
+ * Custom CSS for Company Management System
+ * Enhances Bootstrap styling with application-specific styles
+ */
+
+/* Global Styles */
+:root {
+    --company-primary: #0d6efd;
+    --company-success: #198754;
+    --company-warning: #ffc107;
+    --company-danger: #dc3545;
+    --company-info: #0dcaf0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+}
+
+/* Navigation Enhancements */
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.nav-link.active {
+    font-weight: 600;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 0.375rem;
+}
+
+/* Card Enhancements */
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    transition: box-shadow 0.15s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    font-weight: 600;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Dashboard Cards */
+.card.bg-primary,
+.card.bg-success,
+.card.bg-info,
+.card.bg-warning,
+.card.bg-danger {
+    border: none;
+    color: white;
+}
+
+.card.bg-primary .card-text,
+.card.bg-success .card-text,
+.card.bg-info .card-text,
+.card.bg-warning .card-text,
+.card.bg-danger .card-text {
+    opacity: 0.9;
+}
+
+/* Avatar Styles */
+.avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* Table Enhancements */
+.table th {
+    font-weight: 600;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.125);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.075);
+}
+
+/* Badge Enhancements */
+.badge {
+    font-weight: 500;
+    font-size: 0.75rem;
+}
+
+/* Progress Bar Enhancements */
+.progress {
+    height: 0.5rem;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar {
+    transition: width 0.3s ease;
+}
+
+/* Form Enhancements */
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--company-primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.input-group-text {
+    font-weight: 500;
+}
+
+/* Button Enhancements */
+.btn {
+    font-weight: 500;
+    transition: all 0.15s ease-in-out;
+}
+
+.btn-group .btn.active {
+    font-weight: 600;
+}
+
+/* Alert Enhancements */
+.alert {
+    border: none;
+    font-weight: 500;
+}
+
+.alert-dismissible .btn-close {
+    padding: 0.5rem 0.75rem;
+}
+
+/* Chart Container */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* Pagination Enhancements */
+.pagination .page-link {
+    font-weight: 500;
+    color: var(--company-primary);
+    border-color: rgba(0, 0, 0, 0.125);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--company-primary);
+    border-color: var(--company-primary);
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--company-primary);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Empty State Styles */
+.empty-state {
+    padding: 3rem 1rem;
+    text-align: center;
+}
+
+.empty-state i {
+    opacity: 0.5;
+    margin-bottom: 1rem;
+}
+
+.empty-state h4,
+.empty-state p {
+    color: rgba(var(--bs-body-color-rgb), 0.6);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .display-4,
+    .display-5 {
+        font-size: 2rem;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-group .btn {
+        border-radius: 0.375rem !important;
+        margin-bottom: 0.25rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .card-body .row {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .navbar,
+    .btn,
+    .pagination,
+    footer {
+        display: none !important;
+    }
+    
+    .card {
+        border: 1px solid #000;
+        box-shadow: none;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .table {
+        font-size: 0.75rem;
+    }
+    
+    .text-muted {
+        color: #666 !important;
+    }
+}
+
+/* Utility Classes */
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.border-start-primary {
+    border-left: 4px solid var(--company-primary) !important;
+}
+
+.border-start-success {
+    border-left: 4px solid var(--company-success) !important;
+}
+
+.border-start-warning {
+    border-left: 4px solid var(--company-warning) !important;
+}
+
+.border-start-danger {
+    border-left: 4px solid var(--company-danger) !important;
+}
+
+/* Focus States for Accessibility */
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible {
+    outline: 2px solid var(--company-primary);
+    outline-offset: 2px;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .card {
+        border-width: 2px;
+    }
+    
+    .btn {
+        border-width: 2px;
+    }
+    
+    .table th,
+    .table td {
+        border-width: 2px;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .card,
+    .btn,
+    .progress-bar {
+        transition: none;
+    }
+    
+    .loading::after {
+        animation: none;
+    }
+}

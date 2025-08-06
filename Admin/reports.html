@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - Company Management System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="display-5">
+                <i class="fas fa-chart-bar me-3"></i>Financial Reports
+            </h1>
+            <div class="btn-group">
+                <a href="{{ url_for('reports', weeks=4) }}" class="btn btn-outline-primary {{ 'active' if weeks_back == 4 }}">
+                    4 Weeks
+                </a>
+                <a href="{{ url_for('reports', weeks=8) }}" class="btn btn-outline-primary {{ 'active' if weeks_back == 8 }}">
+                    8 Weeks
+                </a>
+                <a href="{{ url_for('reports', weeks=12) }}" class="btn btn-outline-primary {{ 'active' if weeks_back == 12 }}">
+                    12 Weeks
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Weekly Financial Chart -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-line me-2"></i>Weekly Financial Trends (Last {{ weeks_back }} Weeks)
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="weeklyTrendsChart" height="400"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    {% set total_revenue = weekly_data | sum(attribute='revenue') %}
+    {% set total_payments = weekly_data | sum(attribute='employee_payments') %}
+    {% set total_expenses = weekly_data | sum(attribute='expenses') %}
+    {% set total_profit = total_revenue - total_payments - total_expenses %}
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success">
+            <div class="card-body text-center">
+                <i class="fas fa-money-bill-wave fa-2x mb-2"></i>
+                <h4 class="card-title">{{ "%.0f"|format(total_revenue) }} KSH</h4>
+                <p class="card-text">Total Revenue</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-2x mb-2"></i>
+                <h4 class="card-title">{{ "%.0f"|format(total_payments) }} KSH</h4>
+                <p class="card-text">Employee Payments</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-danger">
+            <div class="card-body text-center">
+                <i class="fas fa-receipt fa-2x mb-2"></i>
+                <h4 class="card-title">{{ "%.0f"|format(total_expenses) }} KSH</h4>
+                <p class="card-text">Total Expenses</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card {{ 'bg-success' if total_profit >= 0 else 'bg-danger' }}">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-line fa-2x mb-2"></i>
+                <h4 class="card-title">{{ "%.0f"|format(total_profit) }} KSH</h4>
+                <p class="card-text">Net Profit</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Weekly Breakdown Table -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-table me-2"></i>Weekly Breakdown
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Week</th>
+                                <th>Total Accounts</th>
+                                <th>Good Accounts</th>
+                                <th>Revenue</th>
+                                <th>Employee Payments</th>
+                                <th>Expenses</th>
+                                <th>Net Profit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for week in weekly_data %}
+                            <tr>
+                                <td>
+                                    <strong>{{ week.week_start.strftime('%b %d') }} - {{ week.week_end.strftime('%b %d') }}</strong>
+                                </td>
+                                <td>{{ week.total_accounts }}</td>
+                                <td>
+                                    <span class="badge bg-success">{{ week.good_accounts }}</span>
+                                </td>
+                                <td class="text-success">{{ "%.0f"|format(week.revenue) }} KSH</td>
+                                <td class="text-warning">{{ "%.0f"|format(week.employee_payments) }} KSH</td>
+                                <td class="text-danger">{{ "%.0f"|format(week.expenses) }} KSH</td>
+                                <td class="{{ 'text-success' if week.net_profit >= 0 else 'text-danger' }}">
+                                    <strong>{{ "%.0f"|format(week.net_profit) }} KSH</strong>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Employee Performance -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-user-chart me-2"></i>Current Week Employee Performance
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                {% if employee_performance %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Employee</th>
+                                <th>Total Accounts</th>
+                                <th>Good Accounts</th>
+                                <th>Success Rate</th>
+                                <th>Payment Due</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for perf in employee_performance %}
+                            {% set success_rate = (perf.good_accounts / perf.total_accounts * 100) if perf.total_accounts > 0 else 0 %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar bg-primary rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                        <strong>{{ perf.employee.name }}</strong>
+                                    </div>
+                                </td>
+                                <td>{{ perf.total_accounts }}</td>
+                                <td>
+                                    <span class="badge bg-success">{{ perf.good_accounts }}</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="progress me-2" style="width: 60px; height: 8px;">
+                                            <div class="progress-bar bg-success" style="width: {{ success_rate }}%"></div>
+                                        </div>
+                                        <small>{{ "%.1f"|format(success_rate) }}%</small>
+                                    </div>
+                                </td>
+                                <td class="text-success">
+                                    <strong>{{ perf.payment }} KSH</strong>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="card-body text-center py-4">
+                    <p class="text-muted">No employee performance data for this week.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Initialize weekly trends chart
+document.addEventListener('DOMContentLoaded', function() {
+    const weeklyData = {{ weekly_data | tojson }};
+    
+    const ctx = document.getElementById('weeklyTrendsChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: weeklyData.map(week => `${week.week_start} - ${week.week_end}`),
+            datasets: [
+                {
+                    label: 'Revenue',
+                    data: weeklyData.map(week => week.revenue),
+                    borderColor: 'rgb(25, 135, 84)',
+                    backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                    tension: 0.1
+                },
+                {
+                    label: 'Employee Payments',
+                    data: weeklyData.map(week => week.employee_payments),
+                    borderColor: 'rgb(255, 193, 7)',
+                    backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                    tension: 0.1
+                },
+                {
+                    label: 'Expenses',
+                    data: weeklyData.map(week => week.expenses),
+                    borderColor: 'rgb(220, 53, 69)',
+                    backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                    tension: 0.1
+                },
+                {
+                    label: 'Net Profit',
+                    data: weeklyData.map(week => week.net_profit),
+                    borderColor: 'rgb(13, 202, 240)',
+                    backgroundColor: 'rgba(13, 202, 240, 0.1)',
+                    tension: 0.1,
+                    borderWidth: 3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Weekly Financial Performance'
+                },
+                legend: {
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString() + ' KSH';
+                        }
+                    }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

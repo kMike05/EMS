@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Accounts - Company Management System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="display-5">
+                <i class="fas fa-file-alt me-3"></i>Accounts
+            </h1>
+            <a href="{{ url_for('add_accounts') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Add Accounts
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label for="employee_id" class="form-label">Filter by Employee</label>
+                <select class="form-select" id="employee_id" name="employee_id">
+                    <option value="">All Employees</option>
+                    {% for employee in employees %}
+                    <option value="{{ employee.id }}" 
+                            {{ 'selected' if selected_employee_id == employee.id }}>
+                        {{ employee.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="col-md-4">
+                <label for="week_start" class="form-label">Filter by Week</label>
+                <input type="date" class="form-control" id="week_start" name="week_start" 
+                       value="{{ selected_week or '' }}">
+            </div>
+            
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-outline-primary me-2">
+                    <i class="fas fa-filter me-1"></i>Filter
+                </button>
+                <a href="{{ url_for('accounts') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-times me-1"></i>Clear
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if accounts.items %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            Accounts ({{ accounts.total }} total)
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Account Number</th>
+                        <th>Client Name</th>
+                        <th>Client Email</th>
+                        <th>Employee</th>
+                        <th>Status</th>
+                        <th>Date Created</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for account in accounts.items %}
+                    <tr>
+                        <td><strong>{{ account.account_number }}</strong></td>
+                        <td>{{ account.client_name }}</td>
+                        <td>
+                            {% if account.client_email %}
+                                <a href="mailto:{{ account.client_email }}" class="text-decoration-none">
+                                    {{ account.client_email }}
+                                </a>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar bg-secondary rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                    <i class="fas fa-user text-white small"></i>
+                                </div>
+                                {{ account.employee.name }}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge {{ 'bg-success' if account.is_good else 'bg-warning' }}">
+                                {{ 'Good Account' if account.is_good else 'Pending Review' }}
+                            </span>
+                        </td>
+                        <td>{{ account.date_created.strftime('%b %d, %Y') }}</td>
+                        <td>
+                            {% if account.notes %}
+                                <span class="text-truncate d-inline-block" style="max-width: 200px;" 
+                                      title="{{ account.notes }}">
+                                    {{ account.notes }}
+                                </span>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Pagination -->
+    {% if accounts.pages > 1 %}
+    <div class="card-footer">
+        <nav aria-label="Accounts pagination">
+            <ul class="pagination justify-content-center mb-0">
+                {% if accounts.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('accounts', page=accounts.prev_num, employee_id=selected_employee_id, week_start=selected_week) }}">
+                        Previous
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for page_num in accounts.iter_pages() %}
+                    {% if page_num %}
+                        {% if page_num != accounts.page %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('accounts', page=page_num, employee_id=selected_employee_id, week_start=selected_week) }}">
+                                {{ page_num }}
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_num }}</span>
+                        </li>
+                        {% endif %}
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if accounts.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('accounts', page=accounts.next_num, employee_id=selected_employee_id, week_start=selected_week) }}">
+                        Next
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+        <h4 class="text-muted">No Accounts Found</h4>
+        <p class="text-muted">
+            {% if selected_employee_id or selected_week %}
+                No accounts match your current filters. Try adjusting your search criteria.
+            {% else %}
+                Get started by adding accounts for your employees.
+            {% endif %}
+        </p>
+        <a href="{{ url_for('add_accounts') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add Accounts
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

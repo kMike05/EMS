@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}Add Accounts - Company Management System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex align-items-center">
+            <a href="{{ url_for('accounts') }}" class="btn btn-outline-secondary me-3">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1 class="display-5 mb-0">
+                <i class="fas fa-plus me-3"></i>Add Accounts
+            </h1>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Account Entry</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="accountForm">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="employee_id" class="form-label">Select Employee *</label>
+                            <select class="form-select" id="employee_id" name="employee_id" required>
+                                <option value="">Choose an employee...</option>
+                                {% for employee in employees %}
+                                <option value="{{ employee.id }}">{{ employee.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="date_created" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="date_created" name="date_created">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Accounts *</label>
+                        <div class="border rounded p-3">
+                            <div id="accountsContainer">
+                                <div class="account-entry mb-4 border-bottom pb-3">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Account Name *</label>
+                                            <input type="text" class="form-control" name="account_names" 
+                                                   placeholder="Enter account/client name" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Account Email</label>
+                                            <input type="email" class="form-control" name="account_emails" 
+                                                   placeholder="client@example.com">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Account Number</label>
+                                            <input type="text" class="form-control" name="account_numbers" 
+                                                   placeholder="ACC001">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Account Status *</label>
+                                            <div class="d-flex gap-3 mt-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="account_status_0" 
+                                                           value="good" id="good_0" checked>
+                                                    <label class="form-check-label text-success" for="good_0">
+                                                        <i class="fas fa-check-circle me-1"></i>Good
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="account_status_0" 
+                                                           value="pending" id="pending_0">
+                                                    <label class="form-check-label text-warning" for="pending_0">
+                                                        <i class="fas fa-clock me-1"></i>Pending
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="account_status_0" 
+                                                           value="bad" id="bad_0">
+                                                    <label class="form-check-label text-danger" for="bad_0">
+                                                        <i class="fas fa-times-circle me-1"></i>Bad
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <label class="form-label">Notes</label>
+                                            <textarea class="form-control" name="account_notes" rows="2" 
+                                                      placeholder="Optional notes about this account"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addAccountField()">
+                                <i class="fas fa-plus me-1"></i>Add Another Account
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('accounts') }}" class="btn btn-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Accounts
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-info">
+            <div class="card-header bg-info">
+                <h6 class="card-title mb-0 text-white">
+                    <i class="fas fa-info-circle me-2"></i>Account Entry Guidelines
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Account Status Guidelines:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check-circle text-success me-2"></i><strong>Good:</strong> Account successfully completed and revenue generating</li>
+                            <li><i class="fas fa-clock text-warning me-2"></i><strong>Pending:</strong> Account in progress, awaiting completion</li>
+                            <li><i class="fas fa-times-circle text-danger me-2"></i><strong>Bad:</strong> Account failed or canceled</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Payment Structure:</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Employee Payment:</strong> 500 KSH per account</li>
+                            <li><strong>Company Revenue:</strong> 1,400 KSH per good account</li>
+                            <li><strong>Net per Good Account:</strong> 900 KSH profit</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Set today's date as default
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date_created').value = today;
+});
+
+function addAccountField() {
+    const container = document.getElementById('accountsContainer');
+    const accountCount = container.children.length;
+    const newField = document.createElement('div');
+    newField.className = 'account-entry mb-4 border-bottom pb-3';
+    newField.innerHTML = `
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Account Name *</label>
+                <input type="text" class="form-control" name="account_names" 
+                       placeholder="Enter account/client name" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Account Email</label>
+                <input type="email" class="form-control" name="account_emails" 
+                       placeholder="client@example.com">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Account Number</label>
+                <input type="text" class="form-control" name="account_numbers" 
+                       placeholder="ACC001">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Account Status *</label>
+                <div class="d-flex gap-3 mt-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="account_status_${accountCount}" 
+                               value="good" id="good_${accountCount}" checked>
+                        <label class="form-check-label text-success" for="good_${accountCount}">
+                            <i class="fas fa-check-circle me-1"></i>Good
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="account_status_${accountCount}" 
+                               value="pending" id="pending_${accountCount}">
+                        <label class="form-check-label text-warning" for="pending_${accountCount}">
+                            <i class="fas fa-clock me-1"></i>Pending
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="account_status_${accountCount}" 
+                               value="bad" id="bad_${accountCount}">
+                        <label class="form-check-label text-danger" for="bad_${accountCount}">
+                            <i class="fas fa-times-circle me-1"></i>Bad
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-10">
+                <label class="form-label">Notes</label>
+                <textarea class="form-control" name="account_notes" rows="2" 
+                          placeholder="Optional notes about this account"></textarea>
+            </div>
+            <div class="col-2 d-flex align-items-end">
+                <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="removeAccountField(this)">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    container.appendChild(newField);
+}
+
+function removeAccountField(button) {
+    const entry = button.closest('.account-entry');
+    entry.remove();
+}
+
+// Form validation
+document.getElementById('accountForm').addEventListener('submit', function(e) {
+    const employeeSelect = document.getElementById('employee_id');
+    const accountNameInputs = document.querySelectorAll('input[name="account_names"]');
+    
+    if (!employeeSelect.value) {
+        e.preventDefault();
+        alert('Please select an employee.');
+        return;
+    }
+    
+    let hasValidAccount = false;
+    accountNameInputs.forEach(input => {
+        if (input.value.trim()) {
+            hasValidAccount = true;
+        }
+    });
+    
+    if (!hasValidAccount) {
+        e.preventDefault();
+        alert('Please enter at least one account name.');
+        return;
+    }
+});
+</script>
+{% endblock %}
